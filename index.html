@@ -336,7 +336,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray);color:var(--text);m
 </div>
 
 <script>
-const POWER_AUTOMATE_URL = '';
+const POWER_AUTOMATE_URL = 'https://defaultae1be7b5fa10473da5ad5a530b8dfe.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1c18038b6a9a4627b990213e9ee65504/triggers/manual/paths/invoke?api-version=1';
 let curStep=1, folio='', uploadedFiles=[], selDocType='INE Cliente';
 
 function genFolio(){
@@ -478,7 +478,19 @@ async function enviar(){
   document.getElementById('suc-folio').textContent=folio;
   const casa=document.querySelector('input[name="c-casa"]:checked');
   const acasa=document.querySelector('input[name="a-casa"]:checked');
-  const payload={
+  const filesBase64 = await Promise.all(uploadedFiles.map(f => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve({
+        name: f.name,
+        type: f.type,
+        content: reader.result.split(',')[1]
+      });
+      reader.readAsDataURL(f.file);
+    });
+  }));
+
+const payload={
     folio,fecha:gv('fecha'),grupo:gv('grupo'),asesor:gv('asesor'),estado:'Enviada',
     c_curp:gv('c-curp'),c_ap1:gv('c-ap1'),c_ap2:gv('c-ap2'),c_nombre:gv('c-nombre'),
     c_tel:gv('c-tel'),c_edad:gv('c-edad'),c_ecivil:gv('c-ecivil'),c_dep:gv('c-dep'),
